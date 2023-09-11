@@ -1,5 +1,6 @@
 ﻿namespace BookkeeperAPI.Controllers
 {
+
     #region usings
     using BookkeeperAPI.Data;
     using BookkeeperAPI.Entity;
@@ -7,20 +8,20 @@
     #endregion
 
     [ApiController]
-    [Route("/api/v1/user/{userId}/expenses")]
+    [Route("/api/v1/users")]
     [Produces("application/json")]
-    public class ExpenseController : ControllerBase
+    public class UserController : ControllerBase
     {
         private BookkeeperContext _context;
-        public ExpenseController(BookkeeperContext context) 
+        public UserController(BookkeeperContext context)
         {
             _context = context;
         }
 
         [HttpGet]
-        public ActionResult<List<Expense>> GetExpense(Guid userId)
+        public ActionResult<List<User>> GetUser()
         {
-            return Ok(_context.Expenses.Where(x => x.User.Id.Equals(userId)));
+            return Ok(_context.Users.ToList());
         }
     }
 }
