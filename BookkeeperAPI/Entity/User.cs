@@ -13,7 +13,7 @@
         public Guid Id { get; set; }
 
         [Column(name: "preference", TypeName = "jsonb")]
-        public UserPreference? Preference { get; set; }
+        public UserPreference? Preferences { get; set; }
 
 
         public UserCredential Credential { get; set; }
