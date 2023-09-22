@@ -1,8 +1,8 @@
 ﻿namespace BookkeeperAPI.Entity
 {
-    using Microsoft.EntityFrameworkCore;
     #region usings
-    using System.ComponentModel;
+    using BookkeeperAPI.Constants;
+    using Microsoft.EntityFrameworkCore;
     using System.Text.Json.Serialization;
     #endregion
 

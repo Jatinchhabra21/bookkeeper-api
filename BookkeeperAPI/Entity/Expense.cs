@@ -1,8 +1,9 @@
 ﻿namespace BookkeeperAPI.Entity
 {
-    using System.ComponentModel.DataAnnotations.Schema;
     #region usings
+    using System.ComponentModel.DataAnnotations.Schema;
     using System.Text.Json.Serialization;
+    using BookkeeperAPI.Constants;
     #endregion
 
     [Table("expense")]

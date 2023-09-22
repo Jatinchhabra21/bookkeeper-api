@@ -15,7 +15,7 @@
     [Produces("application/json")]
     public class UserController : ControllerBase
     {
-        // TODO: Move business logic to service layer and Database logic to Repository layer
+        // TODO(BOOKA-31): Move business logic to service layer and Database logic to Repository layer
         private BookkeeperContext _context;
         public UserController(BookkeeperContext context)
         {
@@ -23,7 +23,7 @@
         }
 
         [HttpGet("/api/me/account")]
-        public IActionResult GetUser([FromRoute] Guid userId)
+        public IActionResult GetUser([FromQuery] Guid userId)
         {
             UserView? user = _context.Users.Where(x => x.Id.Equals(userId)).Select(x => new UserView()
             {
@@ -62,8 +62,8 @@
             return StatusCode(201, u.Entity);
         }
 
-        [HttpPut("/api/users/{userId}/preference")]
-        public IActionResult UpdateUserPreference([FromRoute] Guid userId, UserPreference preference)
+        [HttpPatch("/api/me/preference")]
+        public IActionResult UpdateUserPreference([FromQuery] Guid userId, UserPreference preference)
         {
             UserView? user = _context.Users
                 .Where(x => x.Id.Equals(userId))
@@ -88,7 +88,7 @@
         }
 
         [AllowAnonymous]
-        [HttpPut("/api/me/account/password")]
+        [HttpPatch("/api/me/account/password")]
         public IActionResult CreatePasswordResetToken([FromBody] CreatePasswordResetTokenRequest request)
         {
             User? user = _context.Users
@@ -115,7 +115,7 @@
         [HttpDelete("/api/me/account")]
         public IActionResult DeleteUser()
         {
-            // TODO: Update logic to select user based on user id found in access token
+            // TODO(BOOKA-29): Update logic to select user based on user id found in access token
             _context.Users.Remove(_context.Users.FirstOrDefault());
             _context.SaveChanges();
 

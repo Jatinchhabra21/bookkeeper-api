@@ -1,4 +1,4 @@
-﻿namespace BookkeeperAPI.Entity
+﻿namespace BookkeeperAPI.Constants
 {
     public enum Theme
     {

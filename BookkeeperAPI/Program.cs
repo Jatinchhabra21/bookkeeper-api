@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
 using Newtonsoft.Json;
+using BookkeeperAPI.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 IConfiguration configuration = builder.Configuration;
@@ -56,6 +57,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseCors();
+
+app.UseMiddleware<ExceptionHandler>();
 
 app.UseHttpsRedirection();
 

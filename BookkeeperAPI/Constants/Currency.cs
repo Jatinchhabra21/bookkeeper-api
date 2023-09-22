@@ -1,4 +1,4 @@
-﻿namespace BookkeeperAPI.Entity
+﻿namespace BookkeeperAPI.Constants
 {
     #region usings
     using System.ComponentModel;
