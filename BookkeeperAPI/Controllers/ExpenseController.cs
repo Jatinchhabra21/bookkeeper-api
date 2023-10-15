@@ -42,16 +42,11 @@
         }
 
         [HttpGet("/api/expenses/{expenseId}")]
-        public async Task<ActionResult<ExpenseView>> GetExpenseById(Guid userId, Guid expenseId)
+        public async Task<ActionResult<ExpenseView>> GetExpenseById(Guid expenseId)
         {
-            if (userId == Guid.Empty)
-            {
-                return BadRequest();
-            }
-
             return Ok(
                 await _context.Expenses
-                .Where(x => x.UserId.Equals(userId) && x.Id.Equals(expenseId))
+                .Where(x => x.Id.Equals(expenseId))
                 .Select(x => new ExpenseView()
                 {
                     Id = x.Id,
@@ -95,15 +90,10 @@
         }
 
         [HttpPatch("/api/expenses/{expenseId}")]
-        public async Task<ActionResult<ExpenseView>> UpdateExpense(Guid userId, Guid expenseId, UpdateExpenseRequest expense)
+        public async Task<ActionResult<ExpenseView>> UpdateExpense(Guid expenseId, UpdateExpenseRequest expense)
         {
-            if (userId == Guid.Empty)
-            {
-                return BadRequest();
-            }
-
             Expense? _expense = await _context.Expenses
-                .Where(x => x.UserId.Equals(userId) && x.Id.Equals(expenseId))
+                .Where(x => x.Id.Equals(expenseId))
                 .FirstOrDefaultAsync();
 
             if (_expense == null)
@@ -131,15 +121,10 @@
         }
 
         [HttpDelete("/api/expenses/{expenseId}")]
-        public async Task<IActionResult> DeleteExpense(Guid userId, Guid expenseId)
+        public async Task<IActionResult> DeleteExpense(Guid expenseId)
         {
-            if (userId == Guid.Empty)
-            {
-                return BadRequest();
-            }
-
             Expense? _expense = await _context.Expenses
-                .Where(x => x.UserId.Equals(userId) && x.Id.Equals(expenseId))
+                .Where(x => x.Id.Equals(expenseId))
                 .FirstOrDefaultAsync();
 
             if (_expense == null)
