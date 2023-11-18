@@ -39,7 +39,7 @@
 
         public async Task<UserView> CreateNewUserAsync(CreateUserRequest request)
         {
-            var _ = await _userRepository.GetUserByEmailAsync(request.Email) == null ? throw new HttpOperationException($"User with e-mail \"{request.Email}\" already exists.") : true;
+            var _ = await _userRepository.GetUserByEmailAsync(request.Email) != null ? throw new HttpOperationException($"User with e-mail '{request.Email}' already exists.") : true;
             User user = new User();
             user.Preferences = request.UserPreference;
             user.Credential = new UserCredential()
@@ -94,7 +94,7 @@
             }
 
             // TODO(BOOKA-25): Update logic to create a redirection link with token as query parameter
-            user.Credential.Password = "PasswordReset";
+            user.Credential!.Password = "PasswordReset";
             user.Credential.LastUpdated = DateTime.UtcNow;
             await _userRepository.SaveChangesAsync();
         }
@@ -109,6 +109,29 @@
             }
 
             await _userRepository.DeleteUserAsync(user);
+        }
+
+        public async Task SaveOtpAsync(string email, int otp)
+        {
+            User? user = await _userRepository.GetUserByEmailAsync(email);
+            
+            if(user != null)
+            {
+                throw new HttpRequestException($"User with email '{email}' already exists.");
+            }
+
+            DateTime expirationTime = DateTime.UtcNow.AddMinutes(2);
+            OtpRecord otpRecord = new OtpRecord();
+            otpRecord.Email = email;
+            otpRecord.Otp = otp;
+            otpRecord.ExpirationTime = expirationTime;
+
+            await _userRepository.SaveOtpAsync(otpRecord);
+        }
+
+        public async Task<bool> ValidateOtpAsync(string email, int otp)
+        {
+            return await _userRepository.ValidateOtpAsync(email, otp);
         }
     }
 }

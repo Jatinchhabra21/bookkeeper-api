@@ -20,5 +20,9 @@
         public Task SaveChangesAsync();
 
         public Task DeleteUserAsync(User user);
+
+        public Task SaveOtpAsync(OtpRecord otp);
+
+        public Task<bool> ValidateOtpAsync(string email, int otp);
     }
 }
