@@ -60,5 +60,28 @@
             _context.Users.Remove(user);
             await _context.SaveChangesAsync();
         }
+
+        public async Task SaveOtpAsync(OtpRecord otp)
+        {
+            await _context.Otp.AddAsync(otp);
+
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<bool> ValidateOtpAsync(string email, int otp)
+        {
+            OtpRecord? otpRecord = await _context.Otp.Where(x => x.Email == email && x.Otp == otp).FirstOrDefaultAsync();
+            List<OtpRecord> records = await _context.Otp.Where(x => x.ExpirationTime > DateTime.UtcNow).ToListAsync();
+
+            if (otpRecord == null)
+            {
+                return false;
+            }
+
+            _context.Otp.Remove(otpRecord);
+            _context.Otp.RemoveRange(records);
+            await _context.SaveChangesAsync();
+            return true;
+        }
     }
 }

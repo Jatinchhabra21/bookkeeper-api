@@ -14,5 +14,9 @@ namespace BookkeeperAPI.Service.Interface
         public Task CreatePasswordResetTokenAsync(CreatePasswordResetTokenRequest request);
 
         public Task DeleteUserAsync(Guid userId);
+
+        public Task SaveOtpAsync(string email, int otp);
+
+        public Task<bool> ValidateOtpAsync(string email, int otp);
     }
 }

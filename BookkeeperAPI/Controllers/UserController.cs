@@ -14,6 +14,7 @@
     using Microsoft.EntityFrameworkCore.ChangeTracking;
     using Microsoft.Identity.Client;
     using System.ComponentModel.DataAnnotations;
+    using System.Net;
     using System.Net.Mail;
     #endregion
 
@@ -48,9 +49,17 @@
             return Ok(user);
         }
 
+        [AllowAnonymous]
         [HttpPost("/api/users/new")]
         public async Task<ActionResult<UserView>> CreateUser([FromBody] CreateUserRequest request)
         {
+            bool isOtpValid = await _userService.ValidateOtpAsync(request.Email, request.Otp);
+            
+            if(!isOtpValid)
+            {
+                throw new HttpRequestException("Invalid Otp", null, HttpStatusCode.BadRequest);
+            }
+
             UserView user = await _userService.CreateNewUserAsync(request);
 
             return StatusCode(StatusCodes.Status201Created, user);
@@ -103,8 +112,11 @@
         public async Task<ActionResult> GetOtpForEmail([FromBody] [Required] string email)
         {
             string body = System.IO.File.ReadAllText("EmailTemplates/OtpValidation.htm");
+            int otp = OneTimePassword.Generate();
             body = body.Replace("[User]", email);
-            body = body.Replace("[OTP_CODE]", OneTimePassword.Generate().ToString());
+            body = body.Replace("[OTP_CODE]", otp.ToString());
+            await _userService.SaveOtpAsync(email, otp);
+
             MailMessage message = new MailMessage()
             {
                 From = new MailAddress(_configuration[_configuration["Email:Address"]!]!, "Bookkeeper"),

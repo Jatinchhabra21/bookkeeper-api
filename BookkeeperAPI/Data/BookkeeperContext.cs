@@ -14,6 +14,7 @@
 
         public DbSet<Expense> Expenses { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<OtpRecord> Otp { get; set; }
 
         public DbSet<UserCredential> Credentials { get; set; }
 
@@ -30,6 +31,10 @@
                 .WithOne(c => c.User)
                 .HasForeignKey<UserCredential>(u => u.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<OtpRecord>()
+                .HasKey(x => x.Id)
+                .HasName("id");
 
 
             modelBuilder.HasPostgresEnum<ExpenseCategory>();
