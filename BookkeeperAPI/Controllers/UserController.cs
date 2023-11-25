@@ -13,9 +13,11 @@
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.ChangeTracking;
     using Microsoft.Identity.Client;
+    using Microsoft.IdentityModel.Tokens;
     using System.ComponentModel.DataAnnotations;
     using System.Net;
     using System.Net.Mail;
+    using System.Security.Claims;
     #endregion
 
     [ApiController]
@@ -57,7 +59,7 @@
             
             if(!isOtpValid)
             {
-                throw new HttpRequestException("Invalid Otp", null, HttpStatusCode.BadRequest);
+                throw new HttpOperationException(StatusCodes.Status400BadRequest, "Invalid Otp");
             }
 
             UserView user = await _userService.CreateNewUserAsync(request);
@@ -84,9 +86,14 @@
 
         [AllowAnonymous]
         [HttpPatch("/api/me/account/password")]
-        public async Task<ActionResult> CreatePasswordResetToken([FromBody] CreatePasswordResetTokenRequest request)
+        public async Task<ActionResult> UpdatePassword([FromBody] UpdatePasswordRequest request)
         {
-            await _userService.CreatePasswordResetTokenAsync(request);
+            Guid userId = Guid.Empty;
+            List<Claim> claims = HttpContext.User.Claims.ToList();
+            
+            bool isValidUserId = claims!.Any() ? Guid.TryParse(claims?.Where(x => x.Type == "user_id").First().Value.ToString(), out userId) : false;
+
+            await _userService.UpdatePasswordAsync(userId, isValidUserId, request);
             return StatusCode(StatusCodes.Status204NoContent, null);
         }
 
@@ -108,28 +115,21 @@
         }
 
         [AllowAnonymous]
-        [HttpPost("/api/users/new/otp")]
-        public async Task<ActionResult> GetOtpForEmail([FromBody] [Required] string email)
+        [HttpPost("/api/otp/account-activation")]
+        public async Task<ActionResult> GetOtpForAccountActivation([FromBody] [Required] EmailRequest email)
         {
             string body = System.IO.File.ReadAllText("EmailTemplates/AccountActivation.htm");
-            string otp = OneTimePassword.Generate();
-            body = body.Replace("[User]", email);
-            body = body.Replace("[OTP_CODE]", otp.ToString());
-            await _userService.SaveOtpAsync(email, otp);
+            await _userService.SendOtpEmailAsync(email.Email, body, "Bookkeeper: Account activation");
 
-            MailMessage message = new MailMessage()
-            {
-                From = new MailAddress(_configuration[_configuration["Email:Address"]!]!, "Bookkeeper"),
-                Subject = "Bookkeeper: Account Activation",
-                IsBodyHtml = true,
-                Body = body
-            };
-            message.To.Add(new MailAddress(email));
-            await EmailService.SendEmail(new LoginCredential()
-            {
-                Email = _configuration[_configuration["Email:Address"]!],
-                Password = _configuration[_configuration["Email:Password"]!]
-            }, message);
+            return Ok();
+        }
+
+        [AllowAnonymous]
+        [HttpPost("/api/otp/reset-password")]
+        public async Task<ActionResult> GetOtpForResetPassword([FromBody][Required] EmailRequest email)
+        {
+            string body = System.IO.File.ReadAllText("EmailTemplates/ResetPassword.htm");
+            await _userService.SendOtpEmailAsync(email.Email, body, "Bookkeeper: Password reset");
 
             return Ok();
         }
