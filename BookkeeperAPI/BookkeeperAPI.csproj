@@ -22,6 +22,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Include="EmailTemplates\ResetPassword.htm">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="EmailTemplates\AccountActivation.htm">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

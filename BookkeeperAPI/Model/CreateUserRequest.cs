@@ -29,6 +29,8 @@
         public string Password { get; set; } = string.Empty;
 
         [Required]
+        [StringLength(6)]
+        [RegularExpression("(^[0-9]{6}$)")]
         public string Otp { get; set; } = string.Empty;
     }
 }

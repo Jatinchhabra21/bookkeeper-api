@@ -3,6 +3,7 @@
     #region usings
     using BookkeeperAPI.Data;
     using BookkeeperAPI.Entity;
+    using BookkeeperAPI.Exceptions;
     using BookkeeperAPI.Model;
     using BookkeeperAPI.Repository.Interface;
     using Microsoft.EntityFrameworkCore;
@@ -12,7 +13,7 @@
     public class UserRepository : IUserRepository
     {
         private readonly BookkeeperContext _context;
-        public UserRepository(BookkeeperContext context) 
+        public UserRepository(BookkeeperContext context)
         {
             _context = context;
         }
@@ -82,6 +83,41 @@
             _context.Otp.RemoveRange(records);
             await _context.SaveChangesAsync();
             return true;
+        }
+
+        public async Task UpdatePasswordForUnauthorizedUserAsync(string email, string newPassword)
+        {
+            UserCredential? credentials = await _context.Credentials.Where(x => x.Email == email).FirstOrDefaultAsync();
+
+            if (credentials == null)
+            {
+                throw new HttpOperationException(StatusCodes.Status404NotFound, "User does not exist");
+            }
+
+            credentials.Password = newPassword;
+            credentials.LastUpdated = DateTime.UtcNow;
+
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task UpdatePasswordForAuthorizedUserAsync(Guid userId, string oldPassword, string newPassword)
+        {
+            UserCredential? credentials = await _context.Credentials.Where(x => x.UserId == userId).FirstOrDefaultAsync();
+
+            if (credentials == null)
+            {
+                throw new HttpOperationException(StatusCodes.Status404NotFound, "User does not exist");
+            }
+
+            if (credentials.Password != oldPassword)
+            {
+                throw new HttpOperationException(StatusCodes.Status400BadRequest, "Old password does not match");
+            }
+
+            credentials.Password = newPassword;
+            credentials.LastUpdated = DateTime.UtcNow;
+
+            await _context.SaveChangesAsync();
         }
     }
 }

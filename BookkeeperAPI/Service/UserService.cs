@@ -6,15 +6,20 @@
     using BookkeeperAPI.Model;
     using BookkeeperAPI.Repository.Interface;
     using BookkeeperAPI.Service.Interface;
+    using Microsoft.IdentityModel.Tokens;
+    using System.Net;
+    using System.Net.Mail;
     #endregion
 
     public class UserService : IUserService
     {
         private readonly IUserRepository _userRepository;
+        private readonly IConfiguration _configuration;
 
-        public UserService(IUserRepository userRepository)
+        public UserService(IUserRepository userRepository, IConfiguration configuration)
         {
             _userRepository = userRepository;
+            _configuration = configuration;
         }
 
         public async Task<UserView> GetUserByIdAsync(Guid userId)
@@ -84,19 +89,43 @@
             };
         }
 
-        public async Task CreatePasswordResetTokenAsync(CreatePasswordResetTokenRequest request)
+        public async Task UpdatePasswordAsync(Guid userId, bool isValidUserId, UpdatePasswordRequest request)
         {
-            User? user = await _userRepository.GetUserByEmailAsync(request.Email!);
-
-            if (user == null)
+            // update password for unauthorized users
+            if (!isValidUserId)
             {
-                throw new HttpOperationException(StatusCodes.Status404NotFound, $"User with email '{request.Email}' does not exist");
+                bool isOtpValid = false;
+                // check if otp, email and new password is present in request
+                if (!request.Otp.IsNullOrEmpty() && !request.Email.IsNullOrEmpty() && !request.NewPassword.IsNullOrEmpty())
+                {
+                    isOtpValid = await ValidateOtpAsync(request.Email!, request.Otp!);
+                    // if otp is valid update password
+                    if (isOtpValid)
+                    {
+                        await _userRepository.UpdatePasswordForUnauthorizedUserAsync(request.Email!, request.NewPassword);
+                    }
+                    // if otp is not valid throw error
+                    else
+                    {
+                        throw new HttpOperationException(StatusCodes.Status400BadRequest, "OTP is invalid");
+                    }
+                }
+                // if not present throw error
+                else
+                {
+                    throw new HttpOperationException(StatusCodes.Status400BadRequest, "Bad request");
+                }
             }
-
-            // TODO(BOOKA-25): Update logic to create a redirection link with token as query parameter
-            user.Credential!.Password = "PasswordReset";
-            user.Credential.LastUpdated = DateTime.UtcNow;
-            await _userRepository.SaveChangesAsync();
+            // update password for authorized users
+            else
+            {
+                // check if old password and new password are present in request
+                if (!request.OldPassword.IsNullOrEmpty() && !request.NewPassword.IsNullOrEmpty())
+                    await _userRepository.UpdatePasswordForAuthorizedUserAsync(userId, request.OldPassword!, request.NewPassword);
+                // if old password and new password are not present in request, throw error
+                else
+                    throw new HttpOperationException(StatusCodes.Status400BadRequest, "Bad request");
+            }
         }
 
         public async Task DeleteUserAsync(Guid userId)
@@ -113,13 +142,6 @@
 
         public async Task SaveOtpAsync(string email, string otp)
         {
-            User? user = await _userRepository.GetUserByEmailAsync(email);
-            
-            if(user != null)
-            {
-                throw new HttpRequestException($"User with email '{email}' already exists.");
-            }
-
             DateTime expirationTime = DateTime.UtcNow.AddMinutes(2);
             OtpRecord otpRecord = new OtpRecord();
             otpRecord.Email = email;
@@ -132,6 +154,28 @@
         public async Task<bool> ValidateOtpAsync(string email, string otp)
         {
             return await _userRepository.ValidateOtpAsync(email, otp);
+        }
+
+        public async Task SendOtpEmailAsync(string email, string body, string subject)
+        {
+            string otp = OneTimePassword.Generate();
+            body = body.Replace("[User]", email);
+            body = body.Replace("[OTP_CODE]", otp.ToString());
+            await SaveOtpAsync(email, otp);
+
+            MailMessage message = new MailMessage()
+            {
+                From = new MailAddress(_configuration[_configuration["Email:Address"]!]!, "Bookkeeper"),
+                Subject = subject,
+                IsBodyHtml = true,
+                Body = body
+            };
+            message.To.Add(new MailAddress(email));
+            await EmailService.SendEmail(new LoginCredential()
+            {
+                Email = _configuration[_configuration["Email:Address"]!],
+                Password = _configuration[_configuration["Email:Password"]!]
+            }, message);
         }
     }
 }
