@@ -15,8 +15,8 @@ namespace BookkeeperAPI.Service.Interface
 
         public Task DeleteUserAsync(Guid userId);
 
-        public Task SaveOtpAsync(string email, int otp);
+        public Task SaveOtpAsync(string email, string otp);
 
-        public Task<bool> ValidateOtpAsync(string email, int otp);
+        public Task<bool> ValidateOtpAsync(string email, string otp);
     }
 }

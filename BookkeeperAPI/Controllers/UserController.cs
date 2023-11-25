@@ -111,8 +111,8 @@
         [HttpPost("/api/users/new/otp")]
         public async Task<ActionResult> GetOtpForEmail([FromBody] [Required] string email)
         {
-            string body = System.IO.File.ReadAllText("EmailTemplates/OtpValidation.htm");
-            int otp = OneTimePassword.Generate();
+            string body = System.IO.File.ReadAllText("EmailTemplates/AccountActivation.htm");
+            string otp = OneTimePassword.Generate();
             body = body.Replace("[User]", email);
             body = body.Replace("[OTP_CODE]", otp.ToString());
             await _userService.SaveOtpAsync(email, otp);
@@ -120,7 +120,7 @@
             MailMessage message = new MailMessage()
             {
                 From = new MailAddress(_configuration[_configuration["Email:Address"]!]!, "Bookkeeper"),
-                Subject = "OTP for validating Bookkeeper account",
+                Subject = "Bookkeeper: Account Activation",
                 IsBodyHtml = true,
                 Body = body
             };

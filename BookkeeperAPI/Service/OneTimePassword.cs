@@ -6,16 +6,21 @@
     #endregion
     public static class OneTimePassword
     {
-        public static int Generate()
+        public static string Generate()
         {
             long ticks = DateTime.UtcNow.Ticks;
-            long totalSeconds = Convert.ToInt64(TimeSpan.FromTicks(ticks).TotalSeconds);
-            string tot = totalSeconds.ToString();
-            int otp = 0;
-            for (int i = 0; i < 6; i++)
+            string totalSeconds = Convert.ToString(TimeSpan.FromTicks(ticks).TotalSeconds);
+            StringBuilder stringBuilder = new StringBuilder();
+            int index = 0;
+
+            while (stringBuilder.Length < 6) 
             {
-                otp += (int)((tot[tot.Length - i - 1] - 48) * Math.Pow(10, i));
+                if (totalSeconds[totalSeconds.Length - index - 1] - 48 > 0)
+                    stringBuilder.Append(totalSeconds[totalSeconds.Length - index - 1] - 48);
+                index++;
             }
+
+            string otp = stringBuilder.ToString();
 
             do
             {
@@ -25,14 +30,13 @@
                 {
                     Random rand = new Random();
                     int randomIndex = rand.Next(0, 6);
-                    StringBuilder otpStr = new StringBuilder(otp.ToString());
+                    StringBuilder otpStr = new StringBuilder(otp);
                     otpStr[randomIndex] = random.Next(0, 10).ToString()[0];
-                    otp = Convert.ToInt32(otpStr.ToString());
+                    otp = otpStr.ToString();
                 }
             } while (false);
 
-            otp = Convert.ToInt32(otp.ToString().PadRight(6, '0'));
-            return otp < 0 ? otp * -1 : otp;
+            return otp.Length == 6 ? otp : otp.PadRight(6, '0');
         }
     }
 }

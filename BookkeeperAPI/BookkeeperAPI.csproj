@@ -22,7 +22,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="EmailTemplates\OtpValidation.htm">
+    <Content Include="EmailTemplates\AccountActivation.htm">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

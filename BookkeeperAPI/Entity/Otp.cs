@@ -21,7 +21,7 @@
 
         [Required]
         [Column("otp")]
-        public int Otp { get; set; }
+        public string Otp { get; set; } = string.Empty;
 
         [Required]
         [Column("expiration_time")]

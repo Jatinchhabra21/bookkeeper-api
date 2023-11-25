@@ -68,7 +68,7 @@
             await _context.SaveChangesAsync();
         }
 
-        public async Task<bool> ValidateOtpAsync(string email, int otp)
+        public async Task<bool> ValidateOtpAsync(string email, string otp)
         {
             OtpRecord? otpRecord = await _context.Otp.Where(x => x.Email == email && x.Otp == otp).FirstOrDefaultAsync();
             List<OtpRecord> records = await _context.Otp.Where(x => x.ExpirationTime > DateTime.UtcNow).ToListAsync();
