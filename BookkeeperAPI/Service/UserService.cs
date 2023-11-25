@@ -77,7 +77,7 @@
 
             return new UserView()
             {
-                DisplayName = user.Credential.DisplayName!,
+                DisplayName = user.Credential!.DisplayName!,
                 Email = user.Credential.Email!,
                 Id = user.Id,
                 Preferences = user.Preferences
@@ -111,7 +111,7 @@
             await _userRepository.DeleteUserAsync(user);
         }
 
-        public async Task SaveOtpAsync(string email, int otp)
+        public async Task SaveOtpAsync(string email, string otp)
         {
             User? user = await _userRepository.GetUserByEmailAsync(email);
             
@@ -129,7 +129,7 @@
             await _userRepository.SaveOtpAsync(otpRecord);
         }
 
-        public async Task<bool> ValidateOtpAsync(string email, int otp)
+        public async Task<bool> ValidateOtpAsync(string email, string otp)
         {
             return await _userRepository.ValidateOtpAsync(email, otp);
         }

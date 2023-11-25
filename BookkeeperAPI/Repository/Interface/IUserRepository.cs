@@ -23,6 +23,6 @@
 
         public Task SaveOtpAsync(OtpRecord otp);
 
-        public Task<bool> ValidateOtpAsync(string email, int otp);
+        public Task<bool> ValidateOtpAsync(string email, string otp);
     }
 }

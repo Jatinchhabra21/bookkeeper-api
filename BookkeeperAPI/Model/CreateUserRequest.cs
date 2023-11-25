@@ -29,6 +29,6 @@
         public string Password { get; set; } = string.Empty;
 
         [Required]
-        public int Otp { get; set; }
+        public string Otp { get; set; } = string.Empty;
     }
 }
