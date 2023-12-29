@@ -9,27 +9,28 @@
     using BookkeeperAPI.Repository.Interface;
     using Microsoft.EntityFrameworkCore;
     #endregion
-    public class ExpenseRepository : IExpenseRepository
+    public class TransactionRepository : ITransactionRepository
     {
         private BookkeeperContext _context;
 
-        public ExpenseRepository(BookkeeperContext context)
+        public TransactionRepository(BookkeeperContext context)
         {
             _context = context;
         }
 
-        public async Task<List<ExpenseView>> GetExpensesAsync(Guid userId, int pageNumber, int pageSize, ExpenseCategory? category, string? name, DateTime? from, DateTime? to)
+        public async Task<List<TransactionView>> GetTransactionsAsync(Guid userId, int pageNumber, int pageSize, ExpenseCategory? category, string? name, DateTime? from, DateTime? to, TransactionType? type)
         {
-            List<ExpenseView> data = await _context.Expenses
+            List<TransactionView> data = await _context.Transaction
                 .Where(x => (
                     x.UserId.Equals(userId) &&
                     (x.Category == category || category == null) &&
                     (name == null || x.Name.Contains(name)) &&
                     (from == null || x.Date >= from) &&
-                    (to == null || x.Date <= to)
+                    (to == null || x.Date <= to) &&
+                    (x.Type == type || type == null)
                     )
                 )
-                .Select(x => new ExpenseView()
+                .Select(x => new TransactionView()
                 {
                     Id = x.Id,
                     Name = x.Name,
@@ -38,21 +39,22 @@
                     Date = x.Date,
                 })
                 .Skip((pageNumber - 1) * pageSize)
-            .Take(pageSize)
+                .Take(pageSize)
                 .ToListAsync();
 
             return data;
         }
 
-        public async Task<int> GetExpenseCountAsync(Guid userId, ExpenseCategory? category, string? name, DateTime? from, DateTime? to)
+        public async Task<int> GetTransactionCountAsync(Guid userId, ExpenseCategory? category, string? name, DateTime? from, DateTime? to, TransactionType? type)
         {
-            int totalCount = await _context.Expenses
+            int totalCount = await _context.Transaction
                 .Where(x => (
                     x.UserId.Equals(userId) &&
                     (x.Category == category || category == null) &&
                     (name == null || x.Name.Contains(name)) &&
                     (from == null || x.Date >= from) &&
-                    (to == null || x.Date <= to)
+                    (to == null || x.Date <= to) &&
+                    (x.Type == type || type == null)
                     )
                 )
                 .CountAsync();
@@ -60,23 +62,23 @@
             return totalCount;
         }
 
-        public async Task<Expense?> GetExpenseByIdAsync(Guid expenseId)
+        public async Task<Transaction?> GetTransactionByIdAsync(Guid transactionId)
         {
-            Expense? expense = await _context.Expenses
-                .Where(x => x.Id.Equals(expenseId))
+            Transaction? transaction = await _context.Transaction
+                .Where(x => x.Id.Equals(transactionId))
                 .FirstOrDefaultAsync();
 
-            return expense;
+            return transaction;
         }
 
 
-        public async Task SaveExpenseAsync(Expense expense)
+        public async Task SaveTransactionAsync(Transaction transaction)
         {
-            await _context.Expenses.AddAsync(expense);
+            await _context.Transaction.AddAsync(transaction);
 
-            int result =  await _context.SaveChangesAsync();
+            int result = await _context.SaveChangesAsync();
 
-            if(result == 0 )
+            if (result == 0)
             {
                 throw new HttpOperationException("Something went wrong");
             }
@@ -87,9 +89,9 @@
             await _context.SaveChangesAsync();
         }
 
-        public async Task DeleteExpenseAsync(Expense expense)
+        public async Task DeleteTransactionAsync(Transaction transaction)
         {
-            _context.Expenses.Remove(expense);
+            _context.Transaction.Remove(transaction);
             await _context.SaveChangesAsync();
         }
     }

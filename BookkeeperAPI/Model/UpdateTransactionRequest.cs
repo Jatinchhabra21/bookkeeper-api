@@ -4,7 +4,7 @@
     using BookkeeperAPI.Constants;
     #endregion
 
-    public class UpdateExpenseRequest
+    public class UpdateTransactionRequest
     {
         public string? Name { get; set; }
 
@@ -13,5 +13,7 @@
         public double? Amount { get; set; }
 
         public DateTime? Date { get; set; }
+
+        public TransactionType? Type { get; set; }
     }
 }

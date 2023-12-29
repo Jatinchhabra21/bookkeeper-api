@@ -104,7 +104,11 @@
 
             await _userService.DeleteUserAsync(userId);
 
-            return StatusCode(StatusCodes.Status204NoContent, null);
+            return Ok(new ResponseModel()
+            {
+                Message = "Your account has been deleted successfully",
+                StatusCode = StatusCodes.Status200OK,
+            });
         }
 
         [AllowAnonymous]
