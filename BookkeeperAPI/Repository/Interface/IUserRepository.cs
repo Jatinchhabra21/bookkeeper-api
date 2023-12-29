@@ -24,5 +24,9 @@
         public Task SaveOtpAsync(OtpRecord otp);
 
         public Task<bool> ValidateOtpAsync(string email, string otp);
+
+        public Task UpdatePasswordForUnauthorizedUserAsync(string email, string newPassword);
+
+        public Task UpdatePasswordForAuthorizedUserAsync(Guid userId, string oldPassword, string newPassword);
     }
 }
