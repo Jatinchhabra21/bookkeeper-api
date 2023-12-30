@@ -22,6 +22,8 @@ using Microsoft.Extensions.FileProviders;
 var builder = WebApplication.CreateBuilder(args);
 IConfiguration configuration = builder.Configuration;
 
+// Add services to the container.
+
 builder.Services.AddControllers()
     .AddNewtonsoftJson(options =>
     {
@@ -40,8 +42,6 @@ builder.Host.ConfigureLogging(logging =>
 
 NpgsqlDataSourceBuilder dataSourceBuilder = new NpgsqlDataSourceBuilder(configuration["BookkeeperDB"]);
 dataSourceBuilder.MapEnum<ExpenseCategory>();
-dataSourceBuilder.MapEnum<TransactionType>();
-dataSourceBuilder.MapEnum<IncomeType>();
 NpgsqlDataSource dataSource = dataSourceBuilder.Build();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
@@ -107,8 +107,8 @@ builder.Services.AddCors((options) =>
     });
 });
 
-builder.Services.AddScoped<ITransactionService, TransactionService>();
-builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
+builder.Services.AddScoped<IExpenseService, ExpenseService>();
+builder.Services.AddScoped<IExpenseRepository, ExpenseRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 

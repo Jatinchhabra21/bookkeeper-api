@@ -5,16 +5,14 @@ namespace BookkeeperAPI.Model
     using BookkeeperAPI.Constants;
     #endregion
 
-    public class CreateTransactionRequest
+    public class CreateExpenseRequest
     {
-        public string Name { get; set; } = string.Empty;
+        public string Name { get; set; }
 
         public ExpenseCategory Category { get; set; }
 
         public double Amount { get; set; }
 
         public DateTime Date { get; set; }
-
-        public TransactionType Type { get; set; }
     }
 }

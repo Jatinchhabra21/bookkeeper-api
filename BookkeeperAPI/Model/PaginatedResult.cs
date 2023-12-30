@@ -6,9 +6,9 @@
 
         public int PageSize { get; set; }
 
-        public string FirstPage { get; set; } = string.Empty;
+        public string FirstPage { get; set; }
 
-        public string LastPage { get; set; } = string.Empty;
+        public string LastPage { get; set; }
 
         public int PageCount { get; set; }
 
@@ -18,6 +18,6 @@
 
         public string? PreviousPage { get; set; }
 
-        public IEnumerable<T> Data { get; set; } = Enumerable.Empty<T>();
+        public IEnumerable<T> Data { get; set; }
     }
 }

@@ -1,11 +1,10 @@
-﻿namespace BookkeeperAPI.Middlewares
-{
-    #region usings
-    using BookkeeperAPI.Exceptions;
-    using BookkeeperAPI.Model;
-    using System.Text.Json;
-    #endregion
+﻿using BookkeeperAPI.Exceptions;
+using BookkeeperAPI.Model;
+using System.Net;
+using System.Text.Json;
 
+namespace BookkeeperAPI.Middlewares
+{
     public class ExceptionHandler
     {
         private readonly RequestDelegate _next;

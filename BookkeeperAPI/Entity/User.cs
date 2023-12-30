@@ -13,14 +13,11 @@
         public Guid Id { get; set; }
 
         [Column(name: "preference", TypeName = "jsonb")]
-        [Required]
         public UserPreference? Preferences { get; set; }
 
 
-        public UserCredential Credential { get; set; } = new UserCredential();
+        public UserCredential? Credential { get; set; }
         
-        public IEnumerable<Transaction> Transactions { get; set; } = Enumerable.Empty<Transaction>();
-
-        public IEnumerable<Income> Income { get; set; } = Enumerable.Empty<Income>();
+        public IEnumerable<Expense>? Expenses { get; set; }
     }
 }

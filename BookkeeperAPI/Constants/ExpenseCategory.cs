@@ -15,7 +15,6 @@
         entertainment,
         communication,
         financialExpenses,
-        investment,
-        none
+        investment
     }
 }
