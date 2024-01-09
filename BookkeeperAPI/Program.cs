@@ -111,6 +111,8 @@ builder.Services.AddScoped<ITransactionService, TransactionService>();
 builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IIncomeService, IncomeService>();
+builder.Services.AddScoped<IIncomeRepository, IncomeRepository>();
 
 var app = builder.Build();
 
