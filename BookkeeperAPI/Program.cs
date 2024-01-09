@@ -91,7 +91,7 @@ builder.Services.AddSwaggerGen((options) =>
                 {
                     Type=ReferenceType.SecurityScheme,
                     Id="Bearer"
-                }
+                }   
             },
             new string[]{}
         }
@@ -111,6 +111,8 @@ builder.Services.AddScoped<ITransactionService, TransactionService>();
 builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IIncomeRepository, IncomeRepository>();
+builder.Services.AddScoped<IIncomeService, IncomeService>();
 
 var app = builder.Build();
 

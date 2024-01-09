@@ -6,7 +6,7 @@ namespace BookkeeperAPI.Model
     {
         public string Name { get; set; } = string.Empty;
 
-        public IncomeType Type { get; set; }
+        public string Type { get; set; }
 
         public double Amount { get; set; }
     }

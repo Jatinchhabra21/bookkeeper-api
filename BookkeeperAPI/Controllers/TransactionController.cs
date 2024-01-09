@@ -42,7 +42,7 @@
                 throw new HttpOperationException(401, "Unauthorized");
             }
 
-             string domain = HttpContext.Request.Scheme + "://" + HttpContext.Request.Host + HttpContext.Request.Path;
+            string domain = HttpContext.Request.Scheme + "://" + HttpContext.Request.Host + HttpContext.Request.Path;
 
             PaginatedResult<TransactionView> result = await _transactionService.GetPaginatedTransactionsAsync(userId, domain, pageNumber, pageSize, category, name, from, to, type);
 
@@ -87,7 +87,7 @@
         }
 
         [HttpDelete("/api/transactions/{transactionId}")]
-        [ProducesDefaultResponseType(typeof(NoContentResult))]
+        [ProducesDefaultResponseType(typeof(ResponseModel))]
         [ProducesErrorResponseType(typeof(NotFoundResult))]
         public async Task<ActionResult<ResponseModel>> DeleteTransaction(Guid expenseId)
         {

@@ -23,7 +23,7 @@
 
         public async Task<IncomeView> AddIncomeAsync(Guid userId, AddIncomeRequest request)
         {
-            bool doesExist = (await _incomeRepository.GetIncomeByNameAsync(userId, request.Name)) != null;
+            bool doesExist = (await _incomeRepository.GetIncomeByNameAsync(userId, request.Name)) != null ;
 
             if (doesExist)
             {
@@ -42,7 +42,7 @@
 
             return new IncomeView()
             {
-                Type = income.Type,
+                Type = income.Type.ToString(),
                 Amount = income.Amount,
                 Name = income.Name,
             };
@@ -66,7 +66,7 @@
             return new IncomeView()
             {
                 Amount = income.Amount,
-                Type = income.Type,
+                Type = income.Type.ToString(),
                 Name = income.Name,
             };
         }

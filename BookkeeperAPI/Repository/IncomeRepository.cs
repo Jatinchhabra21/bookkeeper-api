@@ -22,13 +22,13 @@
             {
                 Amount = income.Amount,
                 Name = income.Name,
-                Type = income.Type,
+                Type = income.Type.ToString(),
             }).ToListAsync();
         }
 
         public async Task<Income?> GetIncomeByNameAsync(Guid userId, string name)
         {
-            return await _context.Income.Where(income => income.UserId == userId && income.Name == name).FirstAsync();
+            return await _context.Income.Where(income => income.UserId == userId && income.Name == name).FirstOrDefaultAsync();
         }
 
         public async Task AddIncomeAsync(Income income)

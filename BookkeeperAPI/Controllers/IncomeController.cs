@@ -35,7 +35,7 @@ namespace BookkeeperAPI.Controllers
         }
 
         [HttpPost("/api/me/income")]
-        public async Task<ActionResult<IncomeView>> AddIncome([Required] [FromBody] AddIncomeRequest request)
+        public async Task<ActionResult<IncomeView>> AddIncome([Required][FromBody] AddIncomeRequest request)
         {
             Guid userId;
             string userIdClaim = HttpContext.User.Claims.Where(x => x.Type == "user_id").First().Value.ToString();
@@ -51,7 +51,7 @@ namespace BookkeeperAPI.Controllers
         }
 
         [HttpPatch("/api/me/income")]
-        public async Task<ActionResult<IncomeView>> UpdateIncome([Required] [FromQuery] string name, [Required] [FromBody] UpdateIncomeRequest request)
+        public async Task<ActionResult<IncomeView>> UpdateIncome([Required][FromQuery] string name, [Required][FromBody] UpdateIncomeRequest request)
         {
             Guid userId;
             string userIdClaim = HttpContext.User.Claims.Where(x => x.Type == "user_id").First().Value.ToString();
@@ -67,7 +67,7 @@ namespace BookkeeperAPI.Controllers
         }
 
         [HttpDelete("/api/me/income")]
-        public async Task<ActionResult> RemoveIncome([Required] [FromQuery] string name)
+        public async Task<ActionResult> RemoveIncome([Required][FromQuery] string name)
         {
             Guid userId;
             string userIdClaim = HttpContext.User.Claims.Where(x => x.Type == "user_id").First().Value.ToString();

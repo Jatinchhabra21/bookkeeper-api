@@ -17,6 +17,7 @@
 
     [ApiController]
     [AllowAnonymous]
+    [Produces("application/json")]
     public class AuthenticationController : ControllerBase
     {
         private readonly IConfiguration _configuration;

@@ -6,7 +6,7 @@
     using System.ComponentModel.DataAnnotations.Schema;
     #endregion
 
-    [Table("incomes")]
+    [Table("income")]
     public class Income
     {
         [Key]
@@ -28,6 +28,6 @@
         [Column("user_id")]
         public Guid UserId { get; set; }
 
-        public User User { get; set; } = new User();
+        public User? User { get; set; }
     }
 }
