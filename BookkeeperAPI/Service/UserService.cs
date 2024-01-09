@@ -6,6 +6,7 @@
     using BookkeeperAPI.Model;
     using BookkeeperAPI.Repository.Interface;
     using BookkeeperAPI.Service.Interface;
+    using BookkeeperAPI.Utility;
     using Microsoft.IdentityModel.Tokens;
     using System.Net;
     using System.Net.Mail;
@@ -51,7 +52,7 @@
             {
                 UserId = user.Id,
                 DisplayName = request.DisplayName,
-                Password = request.Password,
+                Password = Parser.EncryptPassword(request.Password),
                 Email = request.Email,
                 LastUpdated = DateTime.UtcNow,
                 CreatedTime = DateTime.UtcNow,

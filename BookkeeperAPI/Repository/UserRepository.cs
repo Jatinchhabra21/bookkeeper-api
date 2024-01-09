@@ -6,6 +6,7 @@
     using BookkeeperAPI.Exceptions;
     using BookkeeperAPI.Model;
     using BookkeeperAPI.Repository.Interface;
+    using BookkeeperAPI.Utility;
     using Microsoft.EntityFrameworkCore;
     using System.ComponentModel.DataAnnotations;
     #endregion
@@ -31,14 +32,6 @@
         {
             return await _context.Users
                 .Where(x => x.Credential!.Email == email)
-                .Include(x => x.Credential)
-                .FirstOrDefaultAsync();
-        }
-
-        public async Task<User?> GetUserByEmailAsync(LoginCredential credential)
-        {
-            return await _context.Users
-                .Where(x => x.Credential!.Email == credential.Email && x.Credential.Password == credential.Password)
                 .Include(x => x.Credential)
                 .FirstOrDefaultAsync();
         }
@@ -94,7 +87,7 @@
                 throw new HttpOperationException(StatusCodes.Status404NotFound, "User does not exist");
             }
 
-            credentials.Password = newPassword;
+            credentials.Password = Parser.EncryptPassword(newPassword);
             credentials.LastUpdated = DateTime.UtcNow;
 
             await _context.SaveChangesAsync();
@@ -114,7 +107,7 @@
                 throw new HttpOperationException(StatusCodes.Status400BadRequest, "Old password does not match");
             }
 
-            credentials.Password = newPassword;
+            credentials.Password = Parser.EncryptPassword(newPassword);
             credentials.LastUpdated = DateTime.UtcNow;
 
             await _context.SaveChangesAsync();
