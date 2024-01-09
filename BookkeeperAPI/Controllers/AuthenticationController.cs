@@ -5,6 +5,7 @@
     using BookkeeperAPI.Exceptions;
     using BookkeeperAPI.Model;
     using BookkeeperAPI.Repository.Interface;
+    using BookkeeperAPI.Utility;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.IdentityModel.Tokens;
@@ -38,12 +39,15 @@
                 throw new HttpOperationException(400, "Bad Request");
             }
 
-            User? userInfo = await _userRepository.GetUserByEmailAsync(credential);
+            User? userInfo = await _userRepository.GetUserByEmailAsync(credential.Email);
 
             if (userInfo == null)
             {
                 throw new HttpOperationException(400, "Invalid credentials");
             }
+
+            if (!Parser.IsValidPassword(credential.Password, userInfo.Credential!.Password!))
+                throw new HttpOperationException(400, "Invalid credentials");
 
             Claim[] claims = new[]
             {
