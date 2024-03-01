@@ -100,9 +100,8 @@
         [HttpDelete("/api/me/account")]
         public async Task<ActionResult> DeleteUser()
         {
-            Guid userId;
             string userIdClaim = HttpContext.User.Claims.Where(x => x.Type == "user_id").First().Value.ToString();
-            bool isValidUserId = Guid.TryParse(userIdClaim, out userId);
+            bool isValidUserId = Guid.TryParse(userIdClaim, out Guid userId);
 
             if (!isValidUserId)
             {
@@ -119,7 +118,7 @@
         }
 
         [AllowAnonymous]
-        [HttpPost("/api/otp/account-activation")]
+        [HttpPost("/api/otp/account/activation")]
         public async Task<ActionResult> GetOtpForAccountActivation([FromBody] [Required] EmailRequest email)
         {
             string body = System.IO.File.ReadAllText("EmailTemplates/AccountActivation.htm");
@@ -129,7 +128,7 @@
         }
 
         [AllowAnonymous]
-        [HttpPost("/api/otp/reset-password")]
+        [HttpPost("/api/otp/account/reset")]
         public async Task<ActionResult> GetOtpForResetPassword([FromBody][Required] EmailRequest email)
         {
             string body = System.IO.File.ReadAllText("EmailTemplates/ResetPassword.htm");
