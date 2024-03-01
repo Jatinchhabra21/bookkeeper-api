@@ -16,7 +16,7 @@
         {
             DailyReminder = true,
             DefaultCurrency = Constants.Currency.INR,
-            DefaultTheme = Constants.Theme.Light
+            DefaultTheme = Constants.Theme.Default
         };
 
         [EmailAddress]
@@ -25,6 +25,7 @@
 
         [PasswordPropertyText(true)]
         [MinLength(8)]
+        [MaxLength(16)]
         [Required]
         public string Password { get; set; } = string.Empty;
 
