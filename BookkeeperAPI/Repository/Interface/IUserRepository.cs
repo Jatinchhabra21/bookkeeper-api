@@ -13,8 +13,6 @@
 
         public Task<User?> GetUserByEmailAsync([EmailAddress] string email);
 
-        public Task<User?> GetUserByEmailAsync(LoginCredential credential);
-
         public Task CreateUserAsync(User user);
 
         public Task SaveChangesAsync();
