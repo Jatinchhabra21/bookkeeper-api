@@ -365,3 +365,5 @@ MigrationBackup/
 /BookkeeperAPI/obj
 /.vs
 /BookkeeperAPI/appsettings.Development.json
+/.idea
+qodana.yaml

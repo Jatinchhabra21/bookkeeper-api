@@ -23,40 +23,30 @@
         public async Task<PaginatedResult<TransactionView>> GetPaginatedTransactionsAsync(Guid userId, string domain, int pageNumber, int pageSize, ExpenseCategory? category, string? name, DateTime? from, DateTime? to, TransactionType? type)
         {
             string filterQuery = "";
-            Dictionary<string, dynamic> parameters = new Dictionary<string, dynamic>()
-            {
-                { "pageNumber", pageNumber },
-                { "pageSize", pageSize }
-            };
 
             if (category != null)
             {
                 filterQuery += $"&category={category}";
-                parameters.Add("category", category.ToString()!);
             }
 
             if (name != null)
             {
                 filterQuery += $"&name={name}";
-                parameters.Add("name", name);
             }
 
             if (from != null)
             {
                 filterQuery += $"&from={from}";
-                parameters.Add("from", from);
             }
 
             if (to != null)
             {
                 filterQuery += $"&to={to}";
-                parameters.Add("to", to);
             }
 
             if (type != null)
             {
                 filterQuery += $"&type={type}";
-                parameters.Add("type", type.ToString()!);
             }
 
             List<TransactionView> data = await _transactionRepository.GetTransactionsAsync(userId, pageNumber, pageSize, category, name, from, to, type);
@@ -94,6 +84,7 @@
                     Amount = result.Amount,
                     Category = result.Category.ToString(),
                     Date = result.Date,
+                    Type = result.Type.ToString()
                 };
             }
 
@@ -126,6 +117,7 @@
                 Category = transaction.Category.ToString(),
                 Amount = transaction.Amount,
                 Date = transaction.Date,
+                Type = transaction.Type.ToString()
             };
 
             return result;
@@ -133,9 +125,9 @@
 
         public async Task<TransactionView> UpdateTransactionAsync(Guid transactionId, UpdateTransactionRequest request)
         {
-            Transaction? _transaction = await _transactionRepository.GetTransactionByIdAsync(transactionId);
+            Transaction? transaction = await _transactionRepository.GetTransactionByIdAsync(transactionId);
 
-            if (_transaction == null)
+            if (transaction == null)
             {
                 throw new HttpOperationException(StatusCodes.Status404NotFound, $"Expense with id '{transactionId}' does not exist");
             }
@@ -143,32 +135,34 @@
 
             if (
                 (
-                _transaction.Type == TransactionType.credit 
+                transaction.Type == TransactionType.credit 
                 || 
                 (request.Type != null && request.Type == TransactionType.credit)) // checks if transaction type is already credit or is being updated to credit
                 && 
                 (request.Category != null 
                 ? request.Category != ExpenseCategory.none 
-                : _transaction.Category != ExpenseCategory.none) // checks if category is not being updated to none or it isn't already none
+                : transaction.Category != ExpenseCategory.none) // checks if category is not being updated to none or it isn't already none
             )
             {
                 throw new HttpOperationException(400, "For transaction type credit, category should be none");
             }
 
-                _transaction.Amount = request?.Amount ?? _transaction.Amount;
-            _transaction.Category = request?.Category ?? _transaction.Category;
-            _transaction.Name = request?.Name ?? _transaction.Name;
-            _transaction.Date = request?.Date ?? _transaction.Date;
+                transaction.Amount = request?.Amount ?? transaction.Amount;
+            transaction.Category = request?.Category ?? transaction.Category;
+            transaction.Name = request?.Name ?? transaction.Name;
+            transaction.Date = request?.Date ?? transaction.Date;
+            transaction.Type = request?.Type ?? transaction.Type;
 
             await _transactionRepository.SaveChangesAsync();
 
             TransactionView result = new TransactionView()
             {
-                Id = _transaction.Id,
-                Name = _transaction.Name,
-                Category = _transaction.Category.ToString(),
-                Amount = _transaction.Amount,
-                Date = _transaction.Date
+                Id = transaction.Id,
+                Name = transaction.Name,
+                Category = transaction.Category.ToString(),
+                Amount = transaction.Amount,
+                Date = transaction.Date,
+                Type = transaction.Type.ToString()
             };
 
             return result;
