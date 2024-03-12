@@ -1,12 +1,12 @@
 ﻿namespace BookkeeperAPI.Repository
 {
     #region usings
-    using BookkeeperAPI.Constants;
-    using BookkeeperAPI.Data;
-    using BookkeeperAPI.Entity;
-    using BookkeeperAPI.Exceptions;
-    using BookkeeperAPI.Model;
-    using BookkeeperAPI.Repository.Interface;
+    using Constants;
+    using Data;
+    using Entity;
+    using Exceptions;
+    using Model;
+    using Interface;
     using Microsoft.EntityFrameworkCore;
     #endregion
     public class TransactionRepository : ITransactionRepository
@@ -37,6 +37,7 @@
                     Amount = x.Amount,
                     Category = x.Category.ToString(),
                     Date = x.Date,
+                    Type = x.Type.ToString()
                 })
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
