@@ -28,7 +28,7 @@
             _transactionService = transactionService;
         }
 
-        [HttpGet("/api/me/transactions")]
+        [HttpGet("/api/transactions")]
         [ProducesDefaultResponseType(typeof(PaginatedResult<TransactionView>))]
         [ProducesErrorResponseType(typeof(ErrorResponseModel))]
         public async Task<ActionResult<PaginatedResult<TransactionView>>> GetTransactions([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 25, [FromQuery] ExpenseCategory? category = null, [FromQuery] string? name = null, [FromQuery] DateTime? from = null, [FromQuery] DateTime? to = null, [FromQuery] TransactionType? type = null)
