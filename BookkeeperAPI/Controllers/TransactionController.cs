@@ -31,11 +31,10 @@
         [HttpGet("/api/transactions")]
         [ProducesDefaultResponseType(typeof(PaginatedResult<TransactionView>))]
         [ProducesErrorResponseType(typeof(ErrorResponseModel))]
-        public async Task<ActionResult<PaginatedResult<TransactionView>>> GetTransactions([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 25, [FromQuery] ExpenseCategory? category = null, [FromQuery] string? name = null, [FromQuery] DateTime? from = null, [FromQuery] DateTime? to = null, [FromQuery] TransactionType? type = null)
+        public async Task<ActionResult<List<TransactionView>>> GetTransactions([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = -1, [FromQuery] ExpenseCategory? category = null, [FromQuery] string? name = null, [FromQuery] DateTime? from = null, [FromQuery] DateTime? to = null, [FromQuery] TransactionType? type = null)
         {
-            Guid userId;
             string userIdClaim = HttpContext.User.Claims.Where(x => x.Type == "user_id").First().Value.ToString();
-            bool isValidUserId = Guid.TryParse(userIdClaim, out userId);
+            bool isValidUserId = Guid.TryParse(userIdClaim, out Guid userId);
 
             if (!isValidUserId)
             {
@@ -44,7 +43,7 @@
 
              string domain = HttpContext.Request.Scheme + "://" + HttpContext.Request.Host + HttpContext.Request.Path;
 
-            PaginatedResult<TransactionView> result = await _transactionService.GetPaginatedTransactionsAsync(userId, domain, pageNumber, pageSize, category, name, from, to, type);
+            List<TransactionView> result = await _transactionService.GetTransactionsAsync();
 
             return result;
         }

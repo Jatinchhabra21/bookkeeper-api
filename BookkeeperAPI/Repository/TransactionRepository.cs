@@ -18,18 +18,9 @@
             _context = context;
         }
 
-        public async Task<List<TransactionView>> GetTransactionsAsync(Guid userId, int pageNumber, int pageSize, ExpenseCategory? category, string? name, DateTime? from, DateTime? to, TransactionType? type)
+        public async Task<List<TransactionView>> GetTransactionsAsync()
         {
-            List<TransactionView> data = await _context.Transaction
-                .Where(x => (
-                    x.UserId.Equals(userId) &&
-                    (x.Category == category || category == null) &&
-                    (name == null || x.Name.Contains(name)) &&
-                    (from == null || x.Date >= from) &&
-                    (to == null || x.Date <= to) &&
-                    (x.Type == type || type == null)
-                    )
-                )
+            List<TransactionView> data = await _context.Transaction 
                 .Select(x => new TransactionView()
                 {
                     Id = x.Id,
@@ -39,8 +30,6 @@
                     Date = x.Date,
                     Type = x.Type.ToString()
                 })
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize)
                 .ToListAsync();
 
             return data;
