@@ -7,7 +7,7 @@
 
     public interface ITransactionService
     {
-        public Task<PaginatedResult<TransactionView>> GetPaginatedTransactionsAsync(Guid userId, string domain, int pageNumber, int pageSize, ExpenseCategory? category, string? name, DateTime? from, DateTime? to, TransactionType? type);
+        public Task<List<TransactionView>> GetTransactionsAsync();
 
         public Task<TransactionView> GetTransactionByIdAsync(Guid expenseId);
 

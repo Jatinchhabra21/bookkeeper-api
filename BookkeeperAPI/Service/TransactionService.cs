@@ -20,55 +20,10 @@
             _transactionRepository = transactionRepository;
         }
 
-        public async Task<PaginatedResult<TransactionView>> GetPaginatedTransactionsAsync(Guid userId, string domain, int pageNumber, int pageSize, ExpenseCategory? category, string? name, DateTime? from, DateTime? to, TransactionType? type)
+        public async Task<List<TransactionView>> GetTransactionsAsync()
         {
-            string filterQuery = "";
-
-            if (category != null)
-            {
-                filterQuery += $"&category={category}";
-            }
-
-            if (name != null)
-            {
-                filterQuery += $"&name={name}";
-            }
-
-            if (from != null)
-            {
-                filterQuery += $"&from={from}";
-            }
-
-            if (to != null)
-            {
-                filterQuery += $"&to={to}";
-            }
-
-            if (type != null)
-            {
-                filterQuery += $"&type={type}";
-            }
-
-            List<TransactionView> data = await _transactionRepository.GetTransactionsAsync(userId, pageNumber, pageSize, category, name, from, to, type);
-
-            int totalCount = await _transactionRepository.GetTransactionCountAsync(userId, category, name, from, to, type);
-
-            int totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
-
-            PaginatedResult<TransactionView> result = new PaginatedResult<TransactionView>()
-            {
-                PageCount = totalPages,
-                PageNumber = pageNumber,
-                PageSize = pageSize,
-                FirstPage = domain + "?pageNumber=1&pageSize=" + pageSize + filterQuery,
-                LastPage = domain + "?pageNumber=" + totalPages + "&pageSize=" + pageSize + filterQuery,
-                TotalCount = totalCount,
-                NextPage = pageNumber == totalPages ? null : (domain + "?pageNumber=" + (pageNumber + 1) + "&pageSize=" + pageSize + filterQuery),
-                PreviousPage = pageNumber == 1 ? null : (domain + "?pageNumber=" + (pageNumber - 1) + "&pageSize=" + pageSize + filterQuery),
-                Data = data,
-            };
-
-            return result;
+            List<TransactionView> data = await _transactionRepository.GetTransactionsAsync();
+            return data;
         }
 
         public async Task<TransactionView> GetTransactionByIdAsync(Guid expenseId)
