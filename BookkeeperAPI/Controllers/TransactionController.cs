@@ -41,7 +41,7 @@
                 throw new HttpOperationException(401, "Unauthorized");
             }
 
-             string domain = HttpContext.Request.Scheme + "://" + HttpContext.Request.Host + HttpContext.Request.Path;
+            string domain = HttpContext.Request.Scheme + "://" + HttpContext.Request.Host + HttpContext.Request.Path;
 
             List<TransactionView> result = await _transactionService.GetTransactionsAsync();
 
@@ -88,9 +88,9 @@
         [HttpDelete("/api/transactions/{transactionId}")]
         [ProducesDefaultResponseType(typeof(NoContentResult))]
         [ProducesErrorResponseType(typeof(NotFoundResult))]
-        public async Task<ActionResult<ResponseModel>> DeleteTransaction(Guid expenseId)
+        public async Task<ActionResult<ResponseModel>> DeleteTransaction(Guid transactionId)
         {
-            await _transactionService.DeleteTransactionAsync(expenseId);
+            await _transactionService.DeleteTransactionAsync(transactionId);
 
             return Ok(new ResponseModel()
             {
